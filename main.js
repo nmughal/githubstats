@@ -21,6 +21,8 @@ promise.then(function handleResponse(responseObj) {
 });
 
 
+
+
 let promise2 = fetch(
   'https://api.github.com/users/' + process.argv[2] + '/repos',
   {
@@ -31,14 +33,19 @@ let promise2 = fetch(
   }
 );
 
+let maxRepo = 0;
+let repoWithMostStars;
+
 promise2.then(function handleResponse(responseObj) {
-  // console.log (responseObj.status);
   if (responseObj.status > 199 && responseObj.status < 300) {
     responseObj.json().then(function printData(repoData) {
-      console.log(repoData.length);
-      repoData.forEach(function printOut(repo) {
-        console.log(repo.stargazers_count);
+      repoData.forEach(function findTheMostStars(repo){
+        if (repo.stargazers_count > maxRepo) {
+          maxRepo = repo.stargazers_count;
+          repoWithMostStars = repo.name;
+        }
       });
+        console.log('The repo with the most stars is the', repoWithMostStars);
     });
   } else {
     console.log('There was a problem', responseObj.status);
