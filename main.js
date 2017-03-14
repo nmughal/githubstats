@@ -46,32 +46,32 @@ promise2.then(function handleResponse(responseObj) {
         }
       });
         console.log('The repo with the most stars is the', repoWithMostStars);
+        let username = process.argv[2];
+        let token = process.argv[3];
+
+        let promise3 = fetch(
+          'https://api.github.com/repos/' + username + '/' + repoWithMostStars + '/contributors',
+          {
+            method: 'GET',
+            headers: {
+              Authorization: 'token ' + token
+            }
+          }
+        );
+
+        promise3.then(function handleRepo(repoObj) {
+          if (repoObj.status > 199 && repoObj.status < 300) {
+            repoObj.json().then(function printData(repos) {
+              repos.forEach(function printOutNames(repoContributor) {
+                console.log('There are', repoContributor.contributions, 'contributors to the repo');
+              });
+            });
+        } else {
+            console.log ('There was a problem', repoObj.status);
+          }
+        });
     });
   } else {
     console.log('There was a problem', responseObj.status);
-  }
-});
-
-
-
-
-
-let promise3 = fetch(
-  'https://api.github.com/users' + process.argv[2] + '/repos/owner/repo/contributors',
-  {
-    method: 'GET',
-    headers: {
-      Authorization: 'token ' + process.argv[3]
-    }
-  }
-);
-
-promise3.then(function handleResponse(responseObj) {
-  if (responseObj.status > 199 && responseObj.status < 300) {
-    responseObj.json().then(function printData(repoContributors) {
-      console.log(repoContributors.name);
-    });
-  } else {
-    console.log ('There was a problem', responseObj.status);
   }
 });
